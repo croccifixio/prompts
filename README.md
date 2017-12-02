@@ -53,15 +53,61 @@ Open the profile using notepad.
 
 Paste the block of code below:
 
-```
-function Prompt
-{
-    $directory = "[$($ExecutionContext.SessionState.Path.CurrentLocation)]"
-    $name_arrow = "$env:username $("$([char]0x2192)" * ($nestedPromptLevel + 1))"
-    Write-Host $directory -f DarkCyan
-    Write-Host $name_arrow -n -f DarkGreen
-    return " "
-}
+```powershell
+      # https://stackoverflow.com/a/44411205/6454553
+      function Write-GitBranchName {
+        try {
+          $branch = git rev-parse --abbrev-ref HEAD
+
+          if ($branch -eq "HEAD") {
+            # detached HEAD, print SHA
+            $sha = git rev-parse --short HEAD
+            Write-Host "($sha)" -n -f Red
+          }
+          elseif ($branch -eq "master") {
+            Write-Host "($branch)" -n -f Yellow
+          }
+          else {
+            Write-Host "($branch)" -n -f DarkGreen
+          }
+        } catch {
+          # newly initiated git repo
+          Write-Host "(no branches yet)" -n -f DarkGreen
+        }
+      }
+
+
+      function Write-Directory {
+        $directory = "[$($ExecutionContext.SessionState.Path.CurrentLocation)]"
+        Write-Host $directory -f DarkCyan
+      }
+
+
+      function Write-UserName {
+        Write-Host "$env:username" -n -f DarkGreen
+      }
+
+
+      function Write-Arrow {
+        $arrow = " $("$([char]0x2192)" * ($nestedPromptLevel + 1))"
+        Write-Host $arrow -n -f DarkGreen
+      }
+
+
+      function Prompt {
+        Write-Directory
+
+        if (Test-Path .git) {
+          Write-GitBranchName
+        }
+        else {
+          Write-UserName
+        }
+
+        Write-Arrow
+        return " "
+      }
+
 ```
 
 ### Useful snippets
