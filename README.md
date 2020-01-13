@@ -18,13 +18,13 @@ Paste the following at the bottom of .bashrc
 
 ```bash
 parse_git_branch() {
-  git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/'
+  git symbolic-ref --short HEAD 2> /dev/null
 }
 current_branch="$(parse_git_branch)"
 if [[ -z "$current_branch" ]]; then
   PS1="\n\[\033[38;5;39m\][\w]\[\033[0m\]\[\033[1;38;5;41m\]\n\[\033[1;4;38;5;41m\]\u\[\033[0;38;5;220m\] → \[\033[0m\]"
 else
-  PS1="\n\[\033[38;5;39m\][\w]\[\033[0m\]\n\[\033[38;5;220m\]$current_branch → \[\033[0m\]"
+  PS1="\n\[\033[38;5;39m\][\w]\[\033[0m\]\n\[\033[38;5;220m\]($current_branch) → \[\033[0m\]"
 fi
 ```
 
